@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { ChevronDown, Users, Target, Award, Phone, Mail, MapPin, Menu, X, ArrowRight, CheckCircle, Star } from 'lucide-react';
 
@@ -305,7 +307,7 @@ const AATopTalent = () => {
 
             <div className="bg-white rounded-xl p-8">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Send us a message</h3>
-              <form className="space-y-6">
+              <div className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <input
                     type="text"
@@ -334,17 +336,17 @@ const AATopTalent = () => {
                   <option>General inquiry</option>
                 </select>
                 <textarea
-                  rows="4"
+                  rows={4}
                   placeholder="Tell us about your needs..."
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 ></textarea>
                 <button
-                  type="submit"
+                  onClick={() => alert('Message sent! We\'ll get back to you soon.')}
                   className="w-full bg-blue-900 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-800 transition-colors"
                 >
                   Send Message
                 </button>
-              </form>
+              </div>
             </div>
           </div>
         </div>
@@ -366,4 +368,6 @@ const AATopTalent = () => {
   );
 };
 
-export default AATopTalent;
+export default function Page() {
+  return <AATopTalent />;
+}
