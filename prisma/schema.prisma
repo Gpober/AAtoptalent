@@ -1,17 +1,19 @@
 // Prisma schema for A&A Top Talent Recruiting Platform
+// Configured for Supabase (PostgreSQL)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // User model for authentication and access control
 model User {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   email     String   @unique
   password  String
   firstName String
@@ -25,11 +27,13 @@ model User {
   // Relations
   candidateNotes CandidateNote[]
   companyNotes   CompanyNote[]
+
+  @@map("users")
 }
 
 // Candidate model for job seekers
 model Candidate {
-  id              String   @id @default(cuid())
+  id              String   @id @default(uuid())
   firstName       String
   lastName        String
   email           String   @unique
@@ -50,14 +54,16 @@ model Candidate {
   updatedAt       DateTime @updatedAt
 
   // Relations
-  notes       CandidateNote[]
-  placements  Placement[]
+  notes        CandidateNote[]
+  placements   Placement[]
   applications Application[]
+
+  @@map("candidates")
 }
 
 // Company model for employers
 model Company {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid())
   name        String
   industry    String?
   website     String?
@@ -74,11 +80,13 @@ model Company {
   users      User[]
   notes      CompanyNote[]
   placements Placement[]
+
+  @@map("companies")
 }
 
 // Contact model for company contacts
 model Contact {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   firstName String
   lastName  String
   email     String?
@@ -89,11 +97,13 @@ model Contact {
   company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("contacts")
 }
 
 // Job model for open positions
 model Job {
-  id           String   @id @default(cuid())
+  id           String   @id @default(uuid())
   title        String
   description  String?
   requirements String?
@@ -110,11 +120,13 @@ model Job {
   // Relations
   applications Application[]
   placements   Placement[]
+
+  @@map("jobs")
 }
 
 // Application model for tracking candidate applications
 model Application {
-  id          String    @id @default(cuid())
+  id          String    @id @default(uuid())
   candidateId String
   candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
   jobId       String
@@ -125,11 +137,12 @@ model Application {
   updatedAt   DateTime  @updatedAt
 
   @@unique([candidateId, jobId])
+  @@map("applications")
 }
 
 // Placement model for successful placements
 model Placement {
-  id          String    @id @default(cuid())
+  id          String    @id @default(uuid())
   candidateId String
   candidate   Candidate @relation(fields: [candidateId], references: [id])
   companyId   String
@@ -143,11 +156,13 @@ model Placement {
   notes       String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@map("placements")
 }
 
 // Notes for candidates
 model CandidateNote {
-  id          String    @id @default(cuid())
+  id          String    @id @default(uuid())
   content     String
   candidateId String
   candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
@@ -155,11 +170,13 @@ model CandidateNote {
   author      User      @relation(fields: [authorId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@map("candidate_notes")
 }
 
 // Notes for companies
 model CompanyNote {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   content   String
   companyId String
   company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
@@ -167,4 +184,6 @@ model CompanyNote {
   author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("company_notes")
 }
