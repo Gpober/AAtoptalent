@@ -1,0 +1,170 @@
+// Prisma schema for A&A Top Talent Recruiting Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and access control
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      String   @default("recruiter") // admin, recruiter
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  candidateNotes CandidateNote[]
+  companyNotes   CompanyNote[]
+}
+
+// Candidate model for job seekers
+model Candidate {
+  id              String   @id @default(cuid())
+  firstName       String
+  lastName        String
+  email           String   @unique
+  phone           String?
+  location        String?
+  currentTitle    String?
+  currentCompany  String?
+  yearsExperience Int?
+  skills          String?  // Comma-separated skills
+  resumeUrl       String?
+  linkedinUrl     String?
+  status          String   @default("active") // active, placed, inactive, do_not_contact
+  source          String?  // referral, linkedin, job_board, website, etc.
+  desiredSalary   String?
+  desiredRole     String?
+  availability    String?  // immediate, 2_weeks, 1_month, etc.
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  notes       CandidateNote[]
+  placements  Placement[]
+  applications Application[]
+}
+
+// Company model for employers
+model Company {
+  id          String   @id @default(cuid())
+  name        String
+  industry    String?
+  website     String?
+  size        String?  // 1-10, 11-50, 51-200, 201-500, 500+
+  location    String?
+  description String?
+  status      String   @default("active") // active, inactive, prospect
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  contacts   Contact[]
+  jobs       Job[]
+  users      User[]
+  notes      CompanyNote[]
+  placements Placement[]
+}
+
+// Contact model for company contacts
+model Contact {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String?
+  phone     String?
+  title     String?
+  isPrimary Boolean  @default(false)
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Job model for open positions
+model Job {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  requirements String?
+  salaryMin    Int?
+  salaryMax    Int?
+  location     String?
+  type         String   @default("full_time") // full_time, part_time, contract, temp_to_hire
+  status       String   @default("open") // open, filled, on_hold, closed
+  companyId    String
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  applications Application[]
+  placements   Placement[]
+}
+
+// Application model for tracking candidate applications
+model Application {
+  id          String    @id @default(cuid())
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  jobId       String
+  job         Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  status      String    @default("submitted") // submitted, screening, interview, offer, rejected, withdrawn
+  notes       String?
+  appliedAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([candidateId, jobId])
+}
+
+// Placement model for successful placements
+model Placement {
+  id          String    @id @default(cuid())
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  companyId   String
+  company     Company   @relation(fields: [companyId], references: [id])
+  jobId       String?
+  job         Job?      @relation(fields: [jobId], references: [id])
+  startDate   DateTime?
+  salary      Int?
+  fee         Int?
+  status      String    @default("active") // active, completed, terminated
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// Notes for candidates
+model CandidateNote {
+  id          String    @id @default(cuid())
+  content     String
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// Notes for companies
+model CompanyNote {
+  id        String   @id @default(cuid())
+  content   String
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
