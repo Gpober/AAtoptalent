@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { ChevronDown, Users, Target, Award, Phone, Mail, MapPin, Menu, X, ArrowRight, CheckCircle, Star } from 'lucide-react';
 
 const AATopTalent = () => {
@@ -63,7 +64,9 @@ const AATopTalent = () => {
                 <a href="#services" className="text-gray-700 hover:text-blue-900 transition-colors">Services</a>
                 <a href="#about" className="text-gray-700 hover:text-blue-900 transition-colors">About</a>
                 <a href="#process" className="text-gray-700 hover:text-blue-900 transition-colors">Process</a>
-                <a href="#contact" className="bg-blue-900 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition-colors">Contact Us</a>
+                <a href="#contact" className="text-gray-700 hover:text-blue-900 transition-colors">Contact</a>
+                <Link href="/signin" className="text-gray-700 hover:text-blue-900 transition-colors font-medium">Sign In</Link>
+                <Link href="/signup" className="bg-blue-900 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition-colors">Get Started</Link>
               </div>
             </div>
 
@@ -86,7 +89,9 @@ const AATopTalent = () => {
               <a href="#services" className="block px-3 py-2 text-gray-700 hover:text-blue-900">Services</a>
               <a href="#about" className="block px-3 py-2 text-gray-700 hover:text-blue-900">About</a>
               <a href="#process" className="block px-3 py-2 text-gray-700 hover:text-blue-900">Process</a>
-              <a href="#contact" className="block px-3 py-2 bg-blue-900 text-white rounded-lg mx-3">Contact Us</a>
+              <a href="#contact" className="block px-3 py-2 text-gray-700 hover:text-blue-900">Contact</a>
+              <Link href="/signin" className="block px-3 py-2 text-gray-700 hover:text-blue-900 font-medium">Sign In</Link>
+              <Link href="/signup" className="block px-3 py-2 bg-blue-900 text-white rounded-lg mx-3 text-center">Get Started</Link>
             </div>
           </div>
         )}

@@ -1,0 +1,189 @@
+// Prisma schema for A&A Top Talent Recruiting Platform
+// Configured for Supabase (PostgreSQL)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// User model for authentication and access control
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      String   @default("recruiter") // admin, recruiter
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  candidateNotes CandidateNote[]
+  companyNotes   CompanyNote[]
+
+  @@map("users")
+}
+
+// Candidate model for job seekers
+model Candidate {
+  id              String   @id @default(uuid())
+  firstName       String
+  lastName        String
+  email           String   @unique
+  phone           String?
+  location        String?
+  currentTitle    String?
+  currentCompany  String?
+  yearsExperience Int?
+  skills          String?  // Comma-separated skills
+  resumeUrl       String?
+  linkedinUrl     String?
+  status          String   @default("active") // active, placed, inactive, do_not_contact
+  source          String?  // referral, linkedin, job_board, website, etc.
+  desiredSalary   String?
+  desiredRole     String?
+  availability    String?  // immediate, 2_weeks, 1_month, etc.
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  notes        CandidateNote[]
+  placements   Placement[]
+  applications Application[]
+
+  @@map("candidates")
+}
+
+// Company model for employers
+model Company {
+  id          String   @id @default(uuid())
+  name        String
+  industry    String?
+  website     String?
+  size        String?  // 1-10, 11-50, 51-200, 201-500, 500+
+  location    String?
+  description String?
+  status      String   @default("active") // active, inactive, prospect
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  contacts   Contact[]
+  jobs       Job[]
+  users      User[]
+  notes      CompanyNote[]
+  placements Placement[]
+
+  @@map("companies")
+}
+
+// Contact model for company contacts
+model Contact {
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String?
+  phone     String?
+  title     String?
+  isPrimary Boolean  @default(false)
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contacts")
+}
+
+// Job model for open positions
+model Job {
+  id           String   @id @default(uuid())
+  title        String
+  description  String?
+  requirements String?
+  salaryMin    Int?
+  salaryMax    Int?
+  location     String?
+  type         String   @default("full_time") // full_time, part_time, contract, temp_to_hire
+  status       String   @default("open") // open, filled, on_hold, closed
+  companyId    String
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  applications Application[]
+  placements   Placement[]
+
+  @@map("jobs")
+}
+
+// Application model for tracking candidate applications
+model Application {
+  id          String    @id @default(uuid())
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  jobId       String
+  job         Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  status      String    @default("submitted") // submitted, screening, interview, offer, rejected, withdrawn
+  notes       String?
+  appliedAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([candidateId, jobId])
+  @@map("applications")
+}
+
+// Placement model for successful placements
+model Placement {
+  id          String    @id @default(uuid())
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  companyId   String
+  company     Company   @relation(fields: [companyId], references: [id])
+  jobId       String?
+  job         Job?      @relation(fields: [jobId], references: [id])
+  startDate   DateTime?
+  salary      Int?
+  fee         Int?
+  status      String    @default("active") // active, completed, terminated
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("placements")
+}
+
+// Notes for candidates
+model CandidateNote {
+  id          String    @id @default(uuid())
+  content     String
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("candidate_notes")
+}
+
+// Notes for companies
+model CompanyNote {
+  id        String   @id @default(uuid())
+  content   String
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("company_notes")
+}
