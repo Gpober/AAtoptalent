@@ -8,10 +8,10 @@ export default function DashboardLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex">
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 
-      <div className="lg:pl-64">
+      <div className="flex-1 lg:ml-0">
         {/* Top Header */}
         <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
           <div className="flex items-center justify-between h-16 px-4 sm:px-6">
