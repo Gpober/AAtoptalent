@@ -7,73 +7,31 @@ import {
   Building2,
   Briefcase,
   TrendingUp,
-  ArrowUpRight,
-  ArrowDownRight,
   Clock,
-  CheckCircle,
   UserPlus,
-  Calendar
+  Calendar,
+  Plus,
+  FileText
 } from 'lucide-react';
 
-const stats = [
-  {
-    name: 'Total Candidates',
-    value: '0',
-    change: '+12%',
-    changeType: 'positive',
-    icon: Users,
-    href: '/dashboard/candidates'
-  },
-  {
-    name: 'Active Companies',
-    value: '0',
-    change: '+4%',
-    changeType: 'positive',
-    icon: Building2,
-    href: '/dashboard/companies'
-  },
-  {
-    name: 'Open Positions',
-    value: '0',
-    change: '-2%',
-    changeType: 'negative',
-    icon: Briefcase,
-    href: '/dashboard/jobs'
-  },
-  {
-    name: 'Placements (MTD)',
-    value: '0',
-    change: '+8%',
-    changeType: 'positive',
-    icon: TrendingUp,
-    href: '/dashboard/placements'
-  },
-];
-
-const recentActivity = [
-  { id: 1, type: 'candidate', action: 'New candidate added', name: 'John Developer', time: '2 hours ago', icon: UserPlus },
-  { id: 2, type: 'application', action: 'Application submitted', name: 'Emily Finance → Financial Analyst', time: '4 hours ago', icon: Clock },
-  { id: 3, type: 'placement', action: 'Placement confirmed', name: 'David Health at HealthFirst', time: '1 day ago', icon: CheckCircle },
-  { id: 4, type: 'job', action: 'New job posted', name: 'Senior Software Engineer at TechCorp', time: '2 days ago', icon: Briefcase },
-];
-
-const upcomingInterviews = [
-  { id: 1, candidate: 'John Developer', company: 'TechCorp Solutions', position: 'Senior Software Engineer', date: 'Today, 2:00 PM' },
-  { id: 2, candidate: 'Emily Finance', company: 'Global Financial', position: 'Financial Analyst', date: 'Tomorrow, 10:00 AM' },
-  { id: 3, candidate: 'David Health', company: 'HealthFirst Medical', position: 'IT Specialist', date: 'Dec 28, 3:00 PM' },
-];
-
 export default function DashboardPage() {
-  const [dashboardStats, setDashboardStats] = useState(stats);
+  const [stats, setStats] = useState({
+    candidates: 0,
+    companies: 0,
+    jobs: 0,
+    placements: 0
+  });
+  const [recentCandidates, setRecentCandidates] = useState([]);
+  const [recentCompanies, setRecentCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchStats() {
+    async function fetchDashboardData() {
       try {
         const [candidatesRes, companiesRes, jobsRes] = await Promise.all([
-          fetch('/api/candidates?limit=1'),
-          fetch('/api/companies?limit=1'),
-          fetch('/api/jobs?status=open&limit=1')
+          fetch('/api/candidates?limit=5'),
+          fetch('/api/companies?limit=5'),
+          fetch('/api/jobs?status=open&limit=5')
         ]);
 
         const [candidatesData, companiesData, jobsData] = await Promise.all([
@@ -82,159 +40,193 @@ export default function DashboardPage() {
           jobsRes.json()
         ]);
 
-        setDashboardStats(prev => prev.map(stat => {
-          if (stat.name === 'Total Candidates') {
-            return { ...stat, value: String(candidatesData.total || 0) };
-          }
-          if (stat.name === 'Active Companies') {
-            return { ...stat, value: String(companiesData.total || 0) };
-          }
-          if (stat.name === 'Open Positions') {
-            return { ...stat, value: String(jobsData.total || 0) };
-          }
-          return stat;
-        }));
+        setStats({
+          candidates: candidatesData.total || 0,
+          companies: companiesData.total || 0,
+          jobs: jobsData.total || 0,
+          placements: 0
+        });
+
+        setRecentCandidates(candidatesData.candidates || []);
+        setRecentCompanies(companiesData.companies || []);
       } catch (error) {
-        console.error('Error fetching stats:', error);
+        console.error('Error fetching dashboard data:', error);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchStats();
+    fetchDashboardData();
   }, []);
+
+  const statCards = [
+    { name: 'Total Candidates', value: stats.candidates, icon: Users, href: '/dashboard/candidates', color: 'bg-blue-50 text-blue-900' },
+    { name: 'Active Companies', value: stats.companies, icon: Building2, href: '/dashboard/companies', color: 'bg-green-50 text-green-900' },
+    { name: 'Open Positions', value: stats.jobs, icon: Briefcase, href: '/dashboard/jobs', color: 'bg-purple-50 text-purple-900' },
+    { name: 'Placements', value: stats.placements, icon: TrendingUp, href: '/dashboard/applications', color: 'bg-orange-50 text-orange-900' },
+  ];
 
   return (
     <div className="space-y-4">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600">Welcome back! Here's an overview of your recruiting pipeline.</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-sm text-gray-600">Welcome back! Here's an overview of your recruiting pipeline.</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {dashboardStats.map((stat) => {
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {statCards.map((stat) => {
           const Icon = stat.icon;
           return (
             <Link
               key={stat.name}
               href={stat.href}
-              className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow"
+              className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow"
             >
-              <div className="flex items-center justify-between">
-                <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
-                  <Icon className="w-6 h-6 text-blue-900" />
-                </div>
-                <div className={`flex items-center text-sm font-medium ${
-                  stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                }`}>
-                  {stat.change}
-                  {stat.changeType === 'positive' ? (
-                    <ArrowUpRight className="w-4 h-4 ml-1" />
-                  ) : (
-                    <ArrowDownRight className="w-4 h-4 ml-1" />
-                  )}
-                </div>
+              <div className={`w-10 h-10 rounded-lg ${stat.color} flex items-center justify-center mb-3`}>
+                <Icon className="w-5 h-5" />
               </div>
-              <div className="mt-4">
-                <h3 className="text-2xl font-bold text-gray-900">
-                  {loading ? '-' : stat.value}
-                </h3>
-                <p className="text-sm text-gray-600 mt-1">{stat.name}</p>
-              </div>
+              <h3 className="text-2xl font-bold text-gray-900">
+                {loading ? '-' : stat.value}
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-600">{stat.name}</p>
             </Link>
           );
         })}
       </div>
 
-      {/* Two Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Activity */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-            <Link href="/dashboard/activity" className="text-sm text-blue-900 hover:text-blue-700 font-medium">
-              View all
-            </Link>
-          </div>
-          <div className="space-y-4">
-            {recentActivity.map((activity) => {
-              const Icon = activity.icon;
-              return (
-                <div key={activity.id} className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-5 h-5 text-gray-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">{activity.action}</p>
-                    <p className="text-sm text-gray-600 truncate">{activity.name}</p>
-                  </div>
-                  <span className="text-xs text-gray-500 whitespace-nowrap">{activity.time}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Upcoming Interviews */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Upcoming Interviews</h2>
-            <Link href="/dashboard/calendar" className="text-sm text-blue-900 hover:text-blue-700 font-medium">
-              View calendar
-            </Link>
-          </div>
-          <div className="space-y-4">
-            {upcomingInterviews.map((interview) => (
-              <div key={interview.id} className="flex items-start gap-4 p-3 rounded-lg hover:bg-gray-50">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                  <Calendar className="w-5 h-5 text-blue-900" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900">{interview.candidate}</p>
-                  <p className="text-sm text-gray-600">{interview.position}</p>
-                  <p className="text-xs text-gray-500">{interview.company}</p>
-                </div>
-                <span className="text-xs font-medium text-blue-900 whitespace-nowrap">{interview.date}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* Quick Actions */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <h2 className="text-base font-semibold text-gray-900 mb-3">Quick Actions</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <Link
             href="/dashboard/candidates/new"
-            className="flex flex-col items-center p-4 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-colors"
+            className="flex flex-col items-center p-3 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-colors"
           >
-            <UserPlus className="w-8 h-8 text-gray-400 mb-2" />
-            <span className="text-sm font-medium text-gray-700">Add Candidate</span>
+            <UserPlus className="w-6 h-6 text-gray-400 mb-1" />
+            <span className="text-xs sm:text-sm font-medium text-gray-700 text-center">Add Candidate</span>
           </Link>
           <Link
             href="/dashboard/companies/new"
-            className="flex flex-col items-center p-4 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-colors"
+            className="flex flex-col items-center p-3 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-colors"
           >
-            <Building2 className="w-8 h-8 text-gray-400 mb-2" />
-            <span className="text-sm font-medium text-gray-700">Add Company</span>
+            <Building2 className="w-6 h-6 text-gray-400 mb-1" />
+            <span className="text-xs sm:text-sm font-medium text-gray-700 text-center">Add Company</span>
           </Link>
           <Link
             href="/dashboard/jobs/new"
-            className="flex flex-col items-center p-4 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-colors"
+            className="flex flex-col items-center p-3 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-colors"
           >
-            <Briefcase className="w-8 h-8 text-gray-400 mb-2" />
-            <span className="text-sm font-medium text-gray-700">Post Job</span>
+            <Briefcase className="w-6 h-6 text-gray-400 mb-1" />
+            <span className="text-xs sm:text-sm font-medium text-gray-700 text-center">Post Job</span>
           </Link>
           <Link
             href="/dashboard/applications"
-            className="flex flex-col items-center p-4 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-colors"
+            className="flex flex-col items-center p-3 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-colors"
           >
-            <Clock className="w-8 h-8 text-gray-400 mb-2" />
-            <span className="text-sm font-medium text-gray-700">Review Applications</span>
+            <FileText className="w-6 h-6 text-gray-400 mb-1" />
+            <span className="text-xs sm:text-sm font-medium text-gray-700 text-center">Applications</span>
           </Link>
+        </div>
+      </div>
+
+      {/* Two Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Recent Candidates */}
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-semibold text-gray-900">Recent Candidates</h2>
+            <Link href="/dashboard/candidates" className="text-xs sm:text-sm text-blue-900 hover:text-blue-700 font-medium">
+              View all
+            </Link>
+          </div>
+          {loading ? (
+            <p className="text-sm text-gray-500 text-center py-4">Loading...</p>
+          ) : recentCandidates.length === 0 ? (
+            <div className="text-center py-6">
+              <Users className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+              <p className="text-sm text-gray-500 mb-3">No candidates yet</p>
+              <Link
+                href="/dashboard/candidates/new"
+                className="inline-flex items-center text-sm text-blue-900 hover:text-blue-700 font-medium"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add your first candidate
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {recentCandidates.slice(0, 5).map((candidate) => (
+                <Link
+                  key={candidate.id}
+                  href={`/dashboard/candidates/${candidate.id}`}
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50"
+                >
+                  <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm font-medium text-blue-900">
+                      {candidate.firstName?.[0]}{candidate.lastName?.[0]}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {candidate.firstName} {candidate.lastName}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {candidate.currentTitle || candidate.email}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Recent Companies */}
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-semibold text-gray-900">Recent Companies</h2>
+            <Link href="/dashboard/companies" className="text-xs sm:text-sm text-blue-900 hover:text-blue-700 font-medium">
+              View all
+            </Link>
+          </div>
+          {loading ? (
+            <p className="text-sm text-gray-500 text-center py-4">Loading...</p>
+          ) : recentCompanies.length === 0 ? (
+            <div className="text-center py-6">
+              <Building2 className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+              <p className="text-sm text-gray-500 mb-3">No companies yet</p>
+              <Link
+                href="/dashboard/companies/new"
+                className="inline-flex items-center text-sm text-blue-900 hover:text-blue-700 font-medium"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add your first company
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {recentCompanies.slice(0, 5).map((company) => (
+                <Link
+                  key={company.id}
+                  href={`/dashboard/companies/${company.id}`}
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <Building2 className="w-4 h-4 text-green-900" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {company.name}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {company.industry || company.location || 'No details'}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
