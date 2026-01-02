@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Sidebar, { MobileMenuButton } from '@/components/Sidebar';
+import AIAssistant from '@/components/AIAssistant';
 import { Bell, Search } from 'lucide-react';
 
 export default function DashboardLayout({ children }) {
@@ -51,6 +52,9 @@ export default function DashboardLayout({ children }) {
           {children}
         </main>
       </div>
+
+      {/* AI Assistant */}
+      <AIAssistant />
     </div>
   );
 }
