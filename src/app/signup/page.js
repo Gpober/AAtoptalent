@@ -27,18 +27,52 @@ export default function SignUp() {
     }));
   };
 
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
+      setError('Passwords do not match!');
       return;
     }
+
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          role: formData.accountType === 'employer' ? 'recruiter' : 'recruiter',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to create account');
+        setIsLoading(false);
+        return;
+      }
+
+      setSuccess(true);
+      // Redirect to signin after 2 seconds
+      setTimeout(() => {
+        window.location.href = '/signin';
+      }, 2000);
+    } catch (err) {
+      setError('An error occurred. Please try again.');
       setIsLoading(false);
-      alert('Account created successfully! (Demo mode)');
-    }, 1500);
+    }
   };
 
   const passwordRequirements = [
@@ -119,6 +153,20 @@ export default function SignUp() {
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+
+              {/* Success Message */}
+              {success && (
+                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
+                  Account created successfully! Redirecting to sign in...
+                </div>
+              )}
+
               {/* Name Fields */}
               <div className="grid grid-cols-2 gap-4">
                 <div>

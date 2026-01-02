@@ -21,14 +21,42 @@ export default function SignIn() {
     }));
   };
 
+  const [error, setError] = useState('');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    setError('');
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to sign in');
+        setIsLoading(false);
+        return;
+      }
+
+      // Store user session in localStorage
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      // Redirect to dashboard
+      window.location.href = '/dashboard';
+    } catch (err) {
+      setError('An error occurred. Please try again.');
       setIsLoading(false);
-      alert('Sign in successful! (Demo mode)');
-    }, 1500);
+    }
   };
 
   return (
@@ -63,6 +91,13 @@ export default function SignIn() {
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+
               {/* Email Field */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
