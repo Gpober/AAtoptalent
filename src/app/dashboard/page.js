@@ -12,7 +12,10 @@ import {
   Clock,
   CheckCircle,
   UserPlus,
-  Calendar
+  Calendar,
+  Bot,
+  Sparkles,
+  MessageSquare
 } from 'lucide-react';
 
 const stats = [
@@ -235,6 +238,63 @@ export default function DashboardPage() {
             <Clock className="w-8 h-8 text-gray-400 mb-2" />
             <span className="text-sm font-medium text-gray-700">Review Applications</span>
           </Link>
+        </div>
+      </div>
+
+      {/* AI Recruiter Widget */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200 p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-xl bg-blue-900 flex items-center justify-center">
+              <Bot className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-bold text-gray-900">AI Recruiter Assistant</h2>
+                <Sparkles className="w-5 h-5 text-blue-600" />
+              </div>
+              <p className="text-gray-600 mt-1">Let AI help you find the perfect candidates and streamline your recruitment process</p>
+            </div>
+          </div>
+          <button className="px-6 py-3 bg-blue-900 text-white rounded-lg font-medium hover:bg-blue-800 transition-colors flex items-center gap-2 whitespace-nowrap">
+            <MessageSquare className="w-5 h-5" />
+            Connect to AI Recruiter
+          </button>
+        </div>
+        <div className="mt-4 grid grid-cols-3 gap-4">
+          <div className="bg-white/70 rounded-lg p-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <Users className="w-4 h-4 text-blue-900" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-600">Candidate Matching</p>
+                <p className="text-sm font-semibold text-gray-900">Smart AI</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white/70 rounded-lg p-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <MessageSquare className="w-4 h-4 text-blue-900" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-600">Auto Screening</p>
+                <p className="text-sm font-semibold text-gray-900">24/7 Active</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white/70 rounded-lg p-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <TrendingUp className="w-4 h-4 text-blue-900" />
+              </div>
+              <div>
+                <p className="text-xs text-gray-600">Pipeline Optimization</p>
+                <p className="text-sm font-semibold text-gray-900">Real-time</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
