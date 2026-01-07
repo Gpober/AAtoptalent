@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Sidebar, { MobileMenuButton } from '@/components/Sidebar';
+import AIRecruiter from '@/components/AIRecruiter';
 import { Bell, Search } from 'lucide-react';
 
 export default function DashboardLayout({ children }) {
@@ -51,6 +52,9 @@ export default function DashboardLayout({ children }) {
           {children}
         </main>
       </div>
+
+      {/* AI Recruiter Widget */}
+      <AIRecruiter />
     </div>
   );
 }
