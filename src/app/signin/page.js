@@ -24,11 +24,36 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to sign in');
+      }
+
+      // Sign in successful
+      alert('Sign in successful!');
+
+      // TODO: Store session/token and redirect to dashboard
+      // For now, redirect to home page
+      window.location.href = '/';
+
+    } catch (error) {
+      alert(error.message || 'An error occurred during sign in');
       setIsLoading(false);
-      alert('Sign in successful! (Demo mode)');
-    }, 1500);
+    }
   };
 
   return (

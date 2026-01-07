@@ -34,11 +34,38 @@ export default function SignUp() {
       return;
     }
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          role: formData.accountType,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create account');
+      }
+
+      // Account created successfully
+      alert('Account created successfully!');
+
+      // Redirect to sign in page
+      window.location.href = '/signin';
+
+    } catch (error) {
+      alert(error.message || 'An error occurred during registration');
       setIsLoading(false);
-      alert('Account created successfully! (Demo mode)');
-    }, 1500);
+    }
   };
 
   const passwordRequirements = [
