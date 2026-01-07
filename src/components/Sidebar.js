@@ -49,9 +49,9 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
       {/* Sidebar */}
       <aside className={`
-        fixed top-0 left-0 z-50 h-full w-64 bg-white border-r border-gray-200
+        fixed top-0 left-0 z-40 h-full w-64 bg-white border-r border-gray-200
         transform transition-transform duration-200 ease-in-out
-        lg:translate-x-0 lg:static lg:z-auto
+        lg:translate-x-0
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="flex flex-col h-full">
