@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, UserPlus } from 'lucide-react';
 
 export default function NewCompanyPage() {
   const router = useRouter();
@@ -18,10 +18,23 @@ export default function NewCompanyPage() {
     description: '',
     status: 'active'
   });
+  const [contactData, setContactData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    title: ''
+  });
+  const [addContact, setAddContact] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleContactChange = (e) => {
+    const { name, value } = e.target;
+    setContactData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -30,10 +43,16 @@ export default function NewCompanyPage() {
     setError('');
 
     try {
+      // Include contact data if adding a contact
+      const payload = { ...formData };
+      if (addContact && (contactData.firstName || contactData.lastName)) {
+        payload.contact = contactData;
+      }
+
       const res = await fetch('/api/companies', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
       if (!res.ok) {
@@ -191,6 +210,105 @@ export default function NewCompanyPage() {
               />
             </div>
           </div>
+        </div>
+
+        {/* Primary Contact Section */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Primary Contact</h2>
+            <button
+              type="button"
+              onClick={() => setAddContact(!addContact)}
+              className={`inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                addContact
+                  ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                  : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+              }`}
+            >
+              <UserPlus className="w-4 h-4 mr-1" />
+              {addContact ? 'Remove Contact' : 'Add Contact'}
+            </button>
+          </div>
+
+          {addContact ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    First Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={contactData.firstName}
+                    onChange={handleContactChange}
+                    required={addContact}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Last Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={contactData.lastName}
+                    onChange={handleContactChange}
+                    required={addContact}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Job Title
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={contactData.title}
+                  onChange={handleContactChange}
+                  placeholder="e.g., HR Manager, CEO"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={contactData.email}
+                    onChange={handleContactChange}
+                    placeholder="contact@company.com"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={contactData.phone}
+                    onChange={handleContactChange}
+                    placeholder="(555) 123-4567"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <p className="text-gray-500 text-sm">
+              Click "Add Contact" to include a primary contact for this company.
+            </p>
+          )}
         </div>
 
         {/* Actions */}
