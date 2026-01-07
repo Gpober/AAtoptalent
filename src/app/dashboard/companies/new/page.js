@@ -37,6 +37,18 @@ export default function NewCompanyPage() {
     setContactData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Format website URL to ensure it has a protocol
+  const formatWebsiteUrl = (url) => {
+    if (!url || url.trim() === '') return '';
+    const trimmed = url.trim();
+    // If it already has a protocol, return as-is
+    if (trimmed.match(/^https?:\/\//i)) {
+      return trimmed;
+    }
+    // Otherwise, prepend https://
+    return `https://${trimmed}`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -44,7 +56,10 @@ export default function NewCompanyPage() {
 
     try {
       // Include contact data if adding a contact
-      const payload = { ...formData };
+      const payload = {
+        ...formData,
+        website: formatWebsiteUrl(formData.website)
+      };
       if (addContact && (contactData.firstName || contactData.lastName)) {
         payload.contact = contactData;
       }
@@ -157,13 +172,16 @@ export default function NewCompanyPage() {
                 Website
               </label>
               <input
-                type="url"
+                type="text"
                 name="website"
                 value={formData.website}
                 onChange={handleChange}
-                placeholder="https://example.com"
+                placeholder="example.com"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Enter the website URL (e.g., example.com or https://example.com)
+              </p>
             </div>
 
             <div>
