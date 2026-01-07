@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Mail, Lock, Eye, EyeOff, User, Building, ArrowRight, CheckCircle } from 'lucide-react';
 
 export default function SignUp() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -37,7 +39,8 @@ export default function SignUp() {
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      alert('Account created successfully! (Demo mode)');
+      // Redirect to dashboard
+      router.push('/dashboard');
     }, 1500);
   };
 
