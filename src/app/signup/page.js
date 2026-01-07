@@ -29,16 +29,50 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match!');
       return;
     }
+
+    // Check password requirements
+    const allRequirementsMet = passwordRequirements.every(req => req.met);
+    if (!allRequirementsMet) {
+      alert('Please meet all password requirements');
+      return;
+    }
+
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          role: formData.accountType === 'employer' ? 'recruiter' : 'candidate'
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || 'Failed to create account');
+        setIsLoading(false);
+        return;
+      }
+
+      // Account created successfully, redirect to sign in
+      alert('Account created successfully! Please sign in.');
+      window.location.href = '/signin';
+    } catch (error) {
+      console.error('Sign up error:', error);
+      alert('An error occurred during registration');
       setIsLoading(false);
-      alert('Account created successfully! (Demo mode)');
-    }, 1500);
+    }
   };
 
   const passwordRequirements = [
