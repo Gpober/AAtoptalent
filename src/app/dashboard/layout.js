@@ -47,7 +47,7 @@ export default function DashboardLayout({ children }) {
         </header>
 
         {/* Main Content */}
-        <main className="p-4 sm:p-6 lg:p-8">
+        <main className="px-6 pt-4 pb-6">
           {children}
         </main>
       </div>

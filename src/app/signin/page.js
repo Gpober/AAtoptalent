@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 
 export default function SignIn() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -27,7 +29,8 @@ export default function SignIn() {
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      alert('Sign in successful! (Demo mode)');
+      // Redirect to dashboard
+      router.push('/dashboard');
     }, 1500);
   };
 
