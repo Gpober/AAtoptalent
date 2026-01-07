@@ -71,7 +71,8 @@ export async function POST(request) {
       size,
       location,
       description,
-      status
+      status,
+      contact
     } = body;
 
     // Validate required fields
@@ -82,15 +83,35 @@ export async function POST(request) {
       );
     }
 
+    // Build company data with optional nested contact creation
+    const companyData = {
+      name,
+      industry,
+      website,
+      size,
+      location,
+      description,
+      status: status || 'active'
+    };
+
+    // If contact data is provided, create the contact along with the company
+    if (contact && (contact.firstName || contact.lastName)) {
+      companyData.contacts = {
+        create: {
+          firstName: contact.firstName || '',
+          lastName: contact.lastName || '',
+          email: contact.email || null,
+          phone: contact.phone || null,
+          title: contact.title || null,
+          isPrimary: true
+        }
+      };
+    }
+
     const company = await prisma.company.create({
-      data: {
-        name,
-        industry,
-        website,
-        size,
-        location,
-        description,
-        status: status || 'active'
+      data: companyData,
+      include: {
+        contacts: true
       }
     });
 
