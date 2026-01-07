@@ -108,11 +108,11 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Page Header */}
-      <div className="mb-1">
+      <div>
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-1">Welcome back! Here's an overview of your recruiting pipeline.</p>
+        <p className="text-gray-600 mt-0.5">Welcome back! Here's an overview of your recruiting pipeline.</p>
       </div>
 
       {/* Stats Grid */}
