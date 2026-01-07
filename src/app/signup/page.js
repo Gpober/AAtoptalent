@@ -56,10 +56,7 @@ export default function SignUp() {
         throw new Error(data.error || 'Failed to create account');
       }
 
-      // Account created successfully
-      alert('Account created successfully!');
-
-      // Redirect to sign in page
+      // Account created successfully - redirect to sign in
       window.location.href = '/signin';
 
     } catch (error) {

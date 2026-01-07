@@ -43,12 +43,8 @@ export default function SignIn() {
         throw new Error(data.error || 'Failed to sign in');
       }
 
-      // Sign in successful
-      alert('Sign in successful!');
-
-      // TODO: Store session/token and redirect to dashboard
-      // For now, redirect to home page
-      window.location.href = '/';
+      // Sign in successful - redirect to dashboard
+      window.location.href = '/dashboard';
 
     } catch (error) {
       alert(error.message || 'An error occurred during sign in');
