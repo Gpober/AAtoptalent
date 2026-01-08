@@ -37,16 +37,10 @@ export default function NewCompanyPage() {
     setContactData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Format website URL to ensure it has a protocol
+  // Clean website URL - allow basic URLs without forcing protocol
   const formatWebsiteUrl = (url) => {
     if (!url || url.trim() === '') return '';
-    const trimmed = url.trim();
-    // If it already has a protocol, return as-is
-    if (trimmed.match(/^https?:\/\//i)) {
-      return trimmed;
-    }
-    // Otherwise, prepend https://
-    return `https://${trimmed}`;
+    return url.trim();
   };
 
   const handleSubmit = async (e) => {

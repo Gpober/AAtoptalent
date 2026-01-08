@@ -16,7 +16,9 @@ import {
   Clock,
   Plus,
   Mail,
-  Phone
+  Phone,
+  X,
+  Save
 } from 'lucide-react';
 
 const statusColors = {
@@ -37,10 +39,71 @@ export default function CompanyDetailPage() {
   const [company, setCompany] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [savingContact, setSavingContact] = useState(false);
+  const [contactData, setContactData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    title: '',
+    isPrimary: false
+  });
 
   useEffect(() => {
     fetchCompany();
   }, [params.id]);
+
+  const handleContactChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setContactData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const resetContactForm = () => {
+    setContactData({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      title: '',
+      isPrimary: false
+    });
+    setShowContactForm(false);
+  };
+
+  async function handleAddContact(e) {
+    e.preventDefault();
+    if (!contactData.firstName || !contactData.lastName) {
+      alert('Please enter first and last name');
+      return;
+    }
+
+    setSavingContact(true);
+    try {
+      const res = await fetch(`/api/companies/${params.id}/contacts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(contactData)
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to add contact');
+      }
+
+      // Refresh company data to show new contact
+      await fetchCompany();
+      resetContactForm();
+    } catch (error) {
+      console.error('Error adding contact:', error);
+      alert('Failed to add contact');
+    } finally {
+      setSavingContact(false);
+    }
+  }
 
   async function fetchCompany() {
     try {
@@ -153,7 +216,7 @@ export default function CompanyDetailPage() {
                 <div className="flex items-center text-gray-600">
                   <Globe className="w-5 h-5 mr-3 text-gray-400" />
                   <a
-                    href={company.website}
+                    href={company.website.match(/^https?:\/\//i) ? company.website : `https://${company.website}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:text-blue-900"
@@ -186,11 +249,126 @@ export default function CompanyDetailPage() {
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Contacts</h2>
-              <button className="inline-flex items-center text-sm text-blue-900 hover:text-blue-700 font-medium">
-                <Plus className="w-4 h-4 mr-1" />
-                Add Contact
+              <button
+                onClick={() => setShowContactForm(!showContactForm)}
+                className={`inline-flex items-center text-sm font-medium ${
+                  showContactForm
+                    ? 'text-red-700 hover:text-red-600'
+                    : 'text-blue-900 hover:text-blue-700'
+                }`}
+              >
+                {showContactForm ? (
+                  <>
+                    <X className="w-4 h-4 mr-1" />
+                    Cancel
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add Contact
+                  </>
+                )}
               </button>
             </div>
+
+            {/* Add Contact Form */}
+            {showContactForm && (
+              <form onSubmit={handleAddContact} className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      First Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={contactData.firstName}
+                      onChange={handleContactChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Last Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={contactData.lastName}
+                      onChange={handleContactChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Job Title
+                  </label>
+                  <input
+                    type="text"
+                    name="title"
+                    value={contactData.title}
+                    onChange={handleContactChange}
+                    placeholder="e.g., HR Manager"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={contactData.email}
+                      onChange={handleContactChange}
+                      placeholder="contact@company.com"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Phone
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={contactData.phone}
+                      onChange={handleContactChange}
+                      placeholder="(555) 123-4567"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center mb-4">
+                  <input
+                    type="checkbox"
+                    name="isPrimary"
+                    id="isPrimary"
+                    checked={contactData.isPrimary}
+                    onChange={handleContactChange}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label htmlFor="isPrimary" className="ml-2 text-sm text-gray-700">
+                    Set as primary contact
+                  </label>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={savingContact}
+                    className="inline-flex items-center px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition-colors text-sm font-medium disabled:opacity-50"
+                  >
+                    <Save className="w-4 h-4 mr-1" />
+                    {savingContact ? 'Saving...' : 'Save Contact'}
+                  </button>
+                </div>
+              </form>
+            )}
+
             {company.contacts && company.contacts.length > 0 ? (
               <div className="space-y-3">
                 {company.contacts.map((contact) => (
