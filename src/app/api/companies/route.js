@@ -66,6 +66,7 @@ export async function POST(request) {
 
     const {
       name,
+      email,
       industry,
       website,
       size,
@@ -86,6 +87,7 @@ export async function POST(request) {
     // Build company data with optional nested contact creation
     const companyData = {
       name,
+      email: email || null,
       industry,
       website,
       size,

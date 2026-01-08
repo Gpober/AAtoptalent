@@ -65,6 +65,7 @@ model Candidate {
 model Company {
   id          String   @id @default(uuid())
   name        String
+  email       String?
   industry    String?
   website     String?
   size        String?  // 1-10, 11-50, 51-200, 201-500, 500+

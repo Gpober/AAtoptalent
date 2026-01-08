@@ -212,6 +212,14 @@ export default function CompanyDetailPage() {
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Company Information</h2>
             <div className="space-y-3">
+              {company.email && (
+                <div className="flex items-center text-gray-600">
+                  <Mail className="w-5 h-5 mr-3 text-gray-400" />
+                  <a href={`mailto:${company.email}`} className="hover:text-blue-900">
+                    {company.email}
+                  </a>
+                </div>
+              )}
               {company.website && (
                 <div className="flex items-center text-gray-600">
                   <Globe className="w-5 h-5 mr-3 text-gray-400" />

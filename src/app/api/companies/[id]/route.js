@@ -69,6 +69,7 @@ export async function PUT(request, { params }) {
       where: { id },
       data: {
         name: body.name,
+        email: body.email || null,
         industry: body.industry,
         website: body.website,
         size: body.size,
