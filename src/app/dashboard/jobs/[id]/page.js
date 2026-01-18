@@ -195,44 +195,57 @@ export default function JobDetailPage() {
             </div>
           )}
 
-          {/* Applications */}
+          {/* Candidate Submissions */}
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">
-                Applications ({job.applications?.length || 0})
+                Candidate Submissions ({job.applications?.length || 0})
               </h2>
             </div>
             {job.applications && job.applications.length > 0 ? (
-              <div className="space-y-3">
-                {job.applications.map((app) => (
-                  <Link
-                    key={app.id}
-                    href={`/dashboard/candidates/${app.candidate.id}`}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-900 font-medium">
-                        {app.candidate.firstName[0]}{app.candidate.lastName[0]}
-                      </div>
-                      <div>
+              <div className="overflow-x-auto">
+                {/* Table Header */}
+                <div className="grid grid-cols-12 gap-4 px-4 py-2 bg-gray-100 rounded-t-lg text-sm font-medium text-gray-600">
+                  <div className="col-span-5">Candidate Name</div>
+                  <div className="col-span-3">Date Submitted</div>
+                  <div className="col-span-2">Title</div>
+                  <div className="col-span-2 text-right">Status</div>
+                </div>
+                {/* Table Rows */}
+                <div className="divide-y divide-gray-100">
+                  {job.applications.map((app) => (
+                    <Link
+                      key={app.id}
+                      href={`/dashboard/candidates/${app.candidate.id}`}
+                      className="grid grid-cols-12 gap-4 p-4 hover:bg-gray-50 items-center"
+                    >
+                      <div className="col-span-5 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-900 font-medium flex-shrink-0">
+                          {app.candidate.firstName[0]}{app.candidate.lastName[0]}
+                        </div>
                         <p className="font-medium text-gray-900">
                           {app.candidate.firstName} {app.candidate.lastName}
                         </p>
-                        <p className="text-sm text-gray-500">
-                          {app.candidate.currentTitle || 'No title'} • Applied {new Date(app.appliedAt).toLocaleDateString()}
-                        </p>
                       </div>
-                    </div>
-                    <span className={`text-xs px-2 py-1 rounded-full capitalize ${applicationStatusColors[app.status] || applicationStatusColors.submitted}`}>
-                      {app.status}
-                    </span>
-                  </Link>
-                ))}
+                      <div className="col-span-3 text-sm text-gray-600">
+                        {new Date(app.appliedAt).toLocaleDateString()}
+                      </div>
+                      <div className="col-span-2 text-sm text-gray-500 truncate">
+                        {app.candidate.currentTitle || '-'}
+                      </div>
+                      <div className="col-span-2 text-right">
+                        <span className={`text-xs px-2 py-1 rounded-full capitalize ${applicationStatusColors[app.status] || applicationStatusColors.submitted}`}>
+                          {app.status}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               </div>
             ) : (
               <div className="text-center py-8">
                 <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">No applications yet</p>
+                <p className="text-gray-500">No candidates submitted yet</p>
               </div>
             )}
           </div>

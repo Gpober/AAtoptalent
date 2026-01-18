@@ -38,6 +38,8 @@ model Candidate {
   lastName        String
   email           String   @unique
   phone           String?
+  cellPhone       String?
+  workPhone       String?
   location        String?
   currentTitle    String?
   currentCompany  String?
@@ -91,6 +93,8 @@ model Contact {
   lastName  String
   email     String?
   phone     String?
+  cellPhone String?
+  workPhone String?
   title     String?
   isPrimary Boolean  @default(false)
   companyId String

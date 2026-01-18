@@ -73,6 +73,8 @@ export async function PUT(request, { params }) {
         lastName: body.lastName,
         email: body.email,
         phone: body.phone,
+        cellPhone: body.cellPhone,
+        workPhone: body.workPhone,
         location: body.location,
         currentTitle: body.currentTitle,
         currentCompany: body.currentCompany,

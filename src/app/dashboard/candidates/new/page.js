@@ -14,6 +14,8 @@ export default function NewCandidatePage() {
     lastName: '',
     email: '',
     phone: '',
+    cellPhone: '',
+    workPhone: '',
     location: '',
     currentTitle: '',
     currentCompany: '',
@@ -126,13 +128,27 @@ export default function NewCandidatePage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone
+                Cell Phone
               </label>
               <input
                 type="tel"
-                name="phone"
-                value={formData.phone}
+                name="cellPhone"
+                value={formData.cellPhone}
                 onChange={handleChange}
+                placeholder="(555) 123-4567"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Work Phone
+              </label>
+              <input
+                type="tel"
+                name="workPhone"
+                value={formData.workPhone}
+                onChange={handleChange}
+                placeholder="(555) 987-6543"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>

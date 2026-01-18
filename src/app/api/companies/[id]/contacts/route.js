@@ -53,6 +53,8 @@ export async function POST(request, { params }) {
         lastName: body.lastName,
         email: body.email || null,
         phone: body.phone || null,
+        cellPhone: body.cellPhone || null,
+        workPhone: body.workPhone || null,
         title: body.title || null,
         isPrimary: body.isPrimary || false,
         companyId: id

@@ -46,6 +46,8 @@ export default function CompanyDetailPage() {
     lastName: '',
     email: '',
     phone: '',
+    cellPhone: '',
+    workPhone: '',
     title: '',
     isPrimary: false
   });
@@ -68,6 +70,8 @@ export default function CompanyDetailPage() {
       lastName: '',
       email: '',
       phone: '',
+      cellPhone: '',
+      workPhone: '',
       title: '',
       isPrimary: false
     });
@@ -331,14 +335,29 @@ export default function CompanyDetailPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Phone
+                      Cell Phone
                     </label>
                     <input
                       type="tel"
-                      name="phone"
-                      value={contactData.phone}
+                      name="cellPhone"
+                      value={contactData.cellPhone}
                       onChange={handleContactChange}
                       placeholder="(555) 123-4567"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Work Phone
+                    </label>
+                    <input
+                      type="tel"
+                      name="workPhone"
+                      value={contactData.workPhone}
+                      onChange={handleContactChange}
+                      placeholder="(555) 987-6543"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     />
                   </div>
@@ -387,17 +406,23 @@ export default function CompanyDetailPage() {
                       {contact.title && (
                         <p className="text-sm text-gray-600">{contact.title}</p>
                       )}
-                      <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                      <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500">
                         {contact.email && (
                           <span className="flex items-center">
                             <Mail className="w-3 h-3 mr-1" />
                             {contact.email}
                           </span>
                         )}
-                        {contact.phone && (
+                        {contact.cellPhone && (
                           <span className="flex items-center">
                             <Phone className="w-3 h-3 mr-1" />
-                            {contact.phone}
+                            Cell: {contact.cellPhone}
+                          </span>
+                        )}
+                        {contact.workPhone && (
+                          <span className="flex items-center">
+                            <Phone className="w-3 h-3 mr-1" />
+                            Work: {contact.workPhone}
                           </span>
                         )}
                       </div>

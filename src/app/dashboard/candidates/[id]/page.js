@@ -164,11 +164,21 @@ export default function CandidateDetailPage() {
                   {candidate.email}
                 </a>
               </div>
-              {candidate.phone && (
+              {candidate.cellPhone && (
                 <div className="flex items-center text-gray-600">
                   <Phone className="w-5 h-5 mr-3 text-gray-400" />
-                  <a href={`tel:${candidate.phone}`} className="hover:text-blue-900">
-                    {candidate.phone}
+                  <span className="text-gray-500 mr-2">Cell:</span>
+                  <a href={`tel:${candidate.cellPhone}`} className="hover:text-blue-900">
+                    {candidate.cellPhone}
+                  </a>
+                </div>
+              )}
+              {candidate.workPhone && (
+                <div className="flex items-center text-gray-600">
+                  <Phone className="w-5 h-5 mr-3 text-gray-400" />
+                  <span className="text-gray-500 mr-2">Work:</span>
+                  <a href={`tel:${candidate.workPhone}`} className="hover:text-blue-900">
+                    {candidate.workPhone}
                   </a>
                 </div>
               )}
